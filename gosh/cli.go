@@ -3,6 +3,7 @@ package gosh
 import (
 	"fmt"
 	"github.com/urfave/cli/v2"
+	"sshx/gosh/ext/pool"
 	"sshx/gosh/fs"
 )
 
@@ -46,10 +47,14 @@ func ParallelSSH() *cli.Command {
 				raw = s
 			}
 
-			t := NewTaskTrigger(raw)
-			if err := t.Run(); err != nil {
-				return cli.Exit("", 1)
+			t, err := pool.New(raw)
+			if err != nil {
+				return cli.Exit(fmt.Sprintf("init error: err -> %s", err), 2)
 			}
+			if err := t.Run(); err != nil {
+				return cli.Exit(fmt.Sprintf("timeout or unmarshal failed: err -> %s", err), 1)
+			}
+
 			return nil
 		},
 	}
