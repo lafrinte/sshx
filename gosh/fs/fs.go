@@ -5,11 +5,21 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/user"
 	"path/filepath"
 )
 
 func DirName(p string) string {
 	return filepath.Dir(p)
+}
+
+func UserName() string {
+	c, err := user.Current()
+	if err != nil {
+		return ""
+	}
+
+	return c.Username
 }
 
 func stat(p string) (os.FileInfo, error) {
